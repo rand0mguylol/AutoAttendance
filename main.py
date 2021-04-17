@@ -12,15 +12,18 @@ from selenium.webdriver.common.by import By
 import json
 import time
 
+INTERVAL_TIME = 1
 
-
-def screenshot(application_name="Microsoft Teams"):
+def screenshot(application_name:str="Microsoft Teams"):
   toplist, winlist = [], []
   def enum_cb(hwnd, results):
       winlist.append((hwnd, win32gui.GetWindowText(hwnd)))
   win32gui.EnumWindows(enum_cb, toplist)
 
   window = [(hwnd, title) for hwnd, title in winlist if application_name.lower() in title.lower() and "notification" not in title.lower()]
+  if len(window) < 1:
+    return None
+
   # just grab the hwnd for first window matching window
   window = window[0]
   hwnd = window[0]
@@ -82,13 +85,11 @@ options = webdriver.ChromeOptions()
 options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
 #Launching the browser
-browser = webdriver.Chrome(options=options, executable_path="C:\\Users\\user\\ChromeWebdriver\\chromedriver.exe")
+browser = webdriver.Chrome(options=options, executable_path="./chromedriver.exe")
 browser.get(link)
 
 
 browser.implicitly_wait(5)
-
-browser.maximize_window()
 
 WebDriverWait(browser, 15).until(EC.url_to_be(link))
 get_ion_button = browser.find_elements_by_tag_name(element)
@@ -126,19 +127,23 @@ link_3 = "https://apspace.apu.edu.my/attendix/update"
 WebDriverWait(browser,15).until(EC.url_to_be(link_3))
 get_input = browser.find_elements_by_tag_name("input")
 
-
 while True:
-  time.sleep(2)
+  time.sleep(INTERVAL_TIME)
   img = screenshot()
+  if not img:
+    continue
   results = decode(img)
-  if len(results) > 0:
-    code = results[0].data.decode()
-    code_list = list(code)
-    for i in range(3):
-      get_input[i+1].send_keys(code_list[i])
-    try:
-      WebDriverWait(browser, 15).until(EC.presence_of_element_located((By.TAG_NAME, "ion-alert")))
-      click_button = browser.find_element_by_class_name("alert-button").click()
-      print("no")
-    except:
-      pass
+  if len(results) < 1:
+    continue
+
+  code = results[0].data.decode()
+  code_list = list(code)
+  for i in range(3):
+    get_input[i+1].send_keys(code_list[i])
+    print("QR code found!")
+  try:
+    WebDriverWait(browser, 15).until(EC.presence_of_element_located((By.TAG_NAME, "ion-alert")))
+    click_button = browser.find_element_by_class_name("alert-button").click()
+    print("Clicked OK button")
+  except Exception as e:
+    print(f"Error encountered: {e}")
