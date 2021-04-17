@@ -82,7 +82,7 @@ options = webdriver.ChromeOptions()
 options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
 #Launching the browser
-browser = webdriver.Chrome(options=options, executable_path="C:\\Users\\user\\ChromeWebdriver\\chromedriver.exe")
+browser = webdriver.Chrome(options=options, executable_path="./chromedriver.exe")
 browser.get(link)
 
 
