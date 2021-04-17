@@ -68,12 +68,6 @@ def screenshot(application_name="Microsoft Teams"):
 
 credential = json.load(open("./credential.json", "r"))
 
-# get image
-# img = Image.open("D://NeuralNetwork//Screenshot (259).png")
-# results = decode(img)
-# code = results[0].data.decode()
-# code_list = list(code)
-
 
 element = 'ion-button'
 link = "https://apspace.apu.edu.my/login"
@@ -94,22 +88,18 @@ browser.get(link)
 
 browser.implicitly_wait(5)
 
-# WebDriverWait(browser,15).until(EC.url_to_be(link))
 browser.maximize_window()
 
 WebDriverWait(browser, 15).until(EC.url_to_be(link))
 get_ion_button = browser.find_elements_by_tag_name(element)
 # get_button = get_ion_button[1]
-# print(get_ion_button)
 
 # get_button.click()
 get_ion_button[1].click()
 
 get_apkey = browser.find_elements_by_name("apkey")
 get_password = browser.find_elements_by_name("password")
-# get_ion_input = browser.find_elements_by_tag_name("ion-input")
-# print(get_apkey)
-# print(get_password)
+
 
 get_apkey[1].send_keys(credential["tp"])
 get_password[1].send_keys(credential["pass"])
@@ -135,7 +125,7 @@ except(StaleElementReferenceException):
 link_3 = "https://apspace.apu.edu.my/attendix/update"
 WebDriverWait(browser,15).until(EC.url_to_be(link_3))
 get_input = browser.find_elements_by_tag_name("input")
-print(get_input)
+
 
 while True:
   time.sleep(2)
@@ -150,6 +140,5 @@ while True:
       WebDriverWait(browser, 15).until(EC.presence_of_element_located((By.TAG_NAME, "ion-alert")))
       click_button = browser.find_element_by_class_name("alert-button").click()
       print("no")
-      continue
     except:
-      continue
+      pass
