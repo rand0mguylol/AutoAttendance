@@ -12,16 +12,22 @@ from selenium.webdriver.common.by import By
 import json
 import time
 
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
 INTERVAL_TIME = 1
+credential = json.load(open("./credential.json", "r"))
 
 def screenshot(application_name:str="Microsoft Teams"):
   toplist, winlist = [], []
   def enum_cb(hwnd, results):
-      winlist.append((hwnd, win32gui.GetWindowText(hwnd)))
+    winlist.append((hwnd, win32gui.GetWindowText(hwnd)))
   win32gui.EnumWindows(enum_cb, toplist)
 
   window = [(hwnd, title) for hwnd, title in winlist if application_name.lower() in title.lower() and "notification" not in title.lower()]
   if len(window) < 1:
+    logging.debug(f"{application_name} not found in `winlist`!")
     return None
 
   # just grab the hwnd for first window matching window
@@ -46,7 +52,6 @@ def screenshot(application_name:str="Microsoft Teams"):
 
   # Change the line below depending on whether you want the whole window
   # or just the client area. 
-  # result = windll.user32.PrintWindow(hwnd, saveDC.GetSafeHdc(), 1)
   result = windll.user32.PrintWindow(hwnd, saveDC.GetSafeHdc(), 2)
 
   bmpinfo = saveBitMap.GetInfo()
@@ -68,8 +73,6 @@ def screenshot(application_name:str="Microsoft Teams"):
     return im
   else:
     return None
-
-credential = json.load(open("./credential.json", "r"))
 
 
 element = 'ion-button'
@@ -93,22 +96,15 @@ browser.implicitly_wait(5)
 
 WebDriverWait(browser, 15).until(EC.url_to_be(link))
 get_ion_button = browser.find_elements_by_tag_name(element)
-# get_button = get_ion_button[1]
-
-# get_button.click()
 get_ion_button[1].click()
 
 get_apkey = browser.find_elements_by_name("apkey")
 get_password = browser.find_elements_by_name("password")
 
-
+logging.info("Logging in")
 get_apkey[1].send_keys(credential["tp"])
 get_password[1].send_keys(credential["pass"])
-
-# get_green_login = get_ion_button[2]
-# get_green_login.click()
 get_ion_button[2].click()
-
 
 try:
   link_2 = "https://apspace.apu.edu.my/tabs/dashboard"
@@ -131,19 +127,21 @@ while True:
   time.sleep(INTERVAL_TIME)
   img = screenshot()
   if not img:
+    logging.debug("There is no screenshot!")
     continue
   results = decode(img)
   if len(results) < 1:
+    logging.debug("QR Code not found!")
     continue
 
   code = results[0].data.decode()
   code_list = list(code)
+  logging.info("QR code found!")
   for i in range(3):
     get_input[i+1].send_keys(code_list[i])
-    print("QR code found!")
   try:
     WebDriverWait(browser, 15).until(EC.presence_of_element_located((By.TAG_NAME, "ion-alert")))
     click_button = browser.find_element_by_class_name("alert-button").click()
-    print("Clicked OK button")
+    logging.debug("Clicked OK button")
   except Exception as e:
-    print(f"Error encountered: {e}")
+    logging.error(f"Error encountered: {e}")
