@@ -108,12 +108,12 @@ else:
   exit()
 
 browser.get(link)
-actions = ActionChains(browser)
 
 browser.implicitly_wait(10)
 
 WebDriverWait(browser, 15).until(EC.url_to_be(link))
 get_ion_button = browser.find_elements_by_tag_name(element)
+actions = ActionChains(browser)
 actions.move_to_element(get_ion_button[1]).perform()
 get_ion_button[1].click()
 
