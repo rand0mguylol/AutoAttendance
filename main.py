@@ -1,9 +1,11 @@
+import os
 import win32gui
 import win32ui #type: ignore
 from ctypes import windll
 from PIL import Image
 from pyzbar.pyzbar import decode
 from selenium import webdriver
+from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import ElementNotInteractableException, NoAlertPresentException, StaleElementReferenceException
 from selenium.common.exceptions import TimeoutException
@@ -18,6 +20,7 @@ logging.basicConfig(level=logging.INFO)
 
 INTERVAL_TIME = 1
 credential = json.load(open("./credential.json", "r"))
+option = json.load(open("./option.json", "r"))
 
 def screenshot(application_name:str="Microsoft Teams"):
   toplist, winlist = [], []
@@ -78,21 +81,36 @@ def screenshot(application_name:str="Microsoft Teams"):
 element = 'ion-button'
 link = "https://apspace.apu.edu.my/login"
 
-#Webdriver options
-options = webdriver.ChromeOptions() 
-
 #Disable website launching
 #options.add_argument("headless")
 
-#Disable getting the bluetooth adapter
-options.add_experimental_option("excludeSwitches", ["enable-logging"])
-
 #Launching the browser
-browser = webdriver.Chrome(options=options, executable_path="./chromedriver.exe")
+browser_option = option["browser"]
+browser = None
+if browser_option == "chrome":
+  #Webdriver options
+  options = webdriver.ChromeOptions() 
+  options.add_experimental_option("excludeSwitches", ["enable-logging"])
+  browser = webdriver.Chrome(options=options, executable_path="./chromedriver.exe")
+
+elif browser_option == "edge":
+  browser = webdriver.Edge(executable_path="./msedgedriver.exe",)
+
+elif browser_option == "firefox":
+  profile = webdriver.FirefoxProfile()
+  profile.set_preference("useAutomationExtension", False)
+  profile.update_preferences()
+  desired = DesiredCapabilities.FIREFOX
+  browser = webdriver.Firefox(executable_path="./geckodriver.exe", firefox_profile=profile, service_log_path=os.devnull, desired_capabilities=desired)
+
+else:
+  logging.error(f"browser {browser_option} is not in the list")
+  exit()
+
 browser.get(link)
 
 
-browser.implicitly_wait(5)
+browser.implicitly_wait(10)
 
 WebDriverWait(browser, 15).until(EC.url_to_be(link))
 get_ion_button = browser.find_elements_by_tag_name(element)
