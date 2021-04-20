@@ -1,6 +1,5 @@
 ## Usage
 
-
 1. Create a `credential.json` file and add in your information like so:
    ```json
    {
@@ -10,3 +9,5 @@
    ```
 2. install all necessary programs `pip install -r requirements.txt`
 3. run the program: `py main.py`
+
+This program uses Google Chrome and is only capable of running on Windows. Feel free to contribute if you are using other operating system!

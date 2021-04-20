@@ -2,3 +2,5 @@ opencv-python
 pyzbar
 numpy
 selenium
+pywin32
+pillow
