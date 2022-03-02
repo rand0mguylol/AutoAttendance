@@ -79,6 +79,7 @@ def screenshot(application_name:str="Microsoft Teams"):
 
 
 element = 'ion-button'
+attendance_element = "quick-access-attendance"
 link = "https://apspace.apu.edu.my/login"
 
 #Disable website launching
@@ -129,14 +130,15 @@ get_ion_button[2].click()
 try:
   link_2 = "https://apspace.apu.edu.my/tabs/dashboard"
   WebDriverWait(browser, 15).until(EC.url_to_be(link_2))
-  get_all_button = browser.find_elements_by_tag_name(element)
-  get_all_button[3].click()
+  get_attendance_button = browser.find_element_by_class_name(attendance_element)
+  get_attendance_button.click()
 
 except(StaleElementReferenceException):
   link_2 = "https://apspace.apu.edu.my/tabs/dashboard"
   WebDriverWait(browser, 15).until(EC.url_to_be(link_2))
-  get_all_button = browser.find_elements_by_tag_name(element)
-  get_all_button[3].click()
+  get_attendance_button = browser.find_element_by_class_name(attendance_element)
+  get_attendance_button.click()
+
 
 
 link_3 = "https://apspace.apu.edu.my/attendix/update"
