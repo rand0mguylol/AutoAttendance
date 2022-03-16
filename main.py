@@ -11,6 +11,11 @@ from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.microsoft import EdgeChromiumDriverManager
+from webdriver_manager.firefox import GeckoDriverManager
+
 import json
 import time
 
@@ -92,17 +97,18 @@ if browser_option == "chrome":
   #Webdriver options
   options = webdriver.ChromeOptions() 
   options.add_experimental_option("excludeSwitches", ["enable-logging"])
-  browser = webdriver.Chrome(options=options, executable_path="./chromedriver.exe")
+  browser = webdriver.Chrome(ChromeDriverManager().install())
 
 elif browser_option == "edge":
-  browser = webdriver.Edge(executable_path="./msedgedriver.exe",)
+  browser = webdriver.Edge(EdgeChromiumDriverManager().install())
 
 elif browser_option == "firefox":
   profile = webdriver.FirefoxProfile()
   profile.set_preference("useAutomationExtension", False)
   profile.update_preferences()
   desired = DesiredCapabilities.FIREFOX
-  browser = webdriver.Firefox(executable_path="./geckodriver.exe", firefox_profile=profile, service_log_path=os.devnull, desired_capabilities=desired)
+  firefoxOption = Options
+  browser = webdriver.Firefox(executable_path=GeckoDriverManager().install(), firefox_profile=profile, service_log_path=os.devnull, desired_capabilities=desired)
 
 else:
   logging.error(f"browser {browser_option} is not in the list")
@@ -129,13 +135,13 @@ get_ion_button[2].click()
 
 try:
   link_2 = "https://apspace.apu.edu.my/tabs/dashboard"
-  WebDriverWait(browser, 15).until(EC.url_to_be(link_2))
+  WebDriverWait(browser, 15).until( EC.element_to_be_clickable((By.CLASS_NAME, attendance_element)))
   get_attendance_button = browser.find_element_by_class_name(attendance_element)
   get_attendance_button.click()
 
 except(StaleElementReferenceException):
   link_2 = "https://apspace.apu.edu.my/tabs/dashboard"
-  WebDriverWait(browser, 15).until(EC.url_to_be(link_2))
+  WebDriverWait(browser, 15).until( EC.element_to_be_clickable((By.CLASS_NAME, attendance_element)))
   get_attendance_button = browser.find_element_by_class_name(attendance_element)
   get_attendance_button.click()
 
