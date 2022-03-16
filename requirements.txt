@@ -3,3 +3,4 @@ numpy
 selenium
 pywin32
 pillow
+webdriver-manager
