@@ -15,17 +15,22 @@ from selenium.webdriver.firefox.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
+from datetime import datetime
 
 import json
 import time
 
 import logging
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(filename='loginfo.txt',level=logging.INFO)
 
 INTERVAL_TIME = 1
 credential = json.load(open("./credential.json", "r"))
 option = json.load(open("./option.json", "r"))
+
+currentTime = datetime.now()
+logging.info("\n\n============================")
+logging.info(currentTime.strftime("%d/%m/%Y %H:%M:%S"))
 
 def screenshot(application_name:str="Microsoft Teams"):
   toplist, winlist = [], []
@@ -170,6 +175,7 @@ while True:
   try:
     WebDriverWait(browser, 15).until(EC.presence_of_element_located((By.TAG_NAME, "ion-alert")))
     click_button = browser.find_element_by_class_name("alert-button").click()
-    logging.debug("Clicked OK button")
+    # logging.debug("Clicked OK button")
+    logging.info("Clicked OK button")
   except Exception as e:
-    logging.error(f"Error encountered: {e}")
+    logging.info(f"Error encountered during code input: {e}")
