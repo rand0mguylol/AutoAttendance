@@ -1,2 +1,4 @@
 credential.json
 *.exe
+*.log
+loginfo.txt
