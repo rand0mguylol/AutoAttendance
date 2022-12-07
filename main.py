@@ -17,7 +17,6 @@ from webdriver_manager.microsoft import EdgeChromiumDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 from datetime import datetime
 
-import pyautogui
 import json
 import time
 
@@ -118,8 +117,13 @@ elif browser_option == "firefox":
     profile.update_preferences()
     desired = DesiredCapabilities.FIREFOX
     firefoxOption = Options
-    browser = webdriver.Firefox(executable_path=GeckoDriverManager().install(), firefox_profile=profile,
-                                service_log_path=os.devnull, desired_capabilities=desired)
+
+    browser = webdriver.Firefox(
+        executable_path=GeckoDriverManager().install(),
+        firefox_profile=profile,
+        service_log_path=os.devnull,
+        desired_capabilities=desired
+    )
 
 else:
     logging.error(f"browser {browser_option} is not in the list")
@@ -146,14 +150,19 @@ get_ion_button[2].click()
 
 try:
     link_2 = "https://apspace.apu.edu.my/tabs/dashboard"
-    WebDriverWait(browser, 15).until(EC.element_to_be_clickable((By.CLASS_NAME, attendance_element)))
-    get_attendance_button = browser.find_element_by_class_name(attendance_element)
+    WebDriverWait(browser, 15).until(
+        EC.element_to_be_clickable((By.CLASS_NAME, attendance_element)))
+    get_attendance_button = browser.find_element_by_class_name(
+        attendance_element)
     get_attendance_button.click()
 
-except(StaleElementReferenceException):
+except StaleElementReferenceException:
     link_2 = "https://apspace.apu.edu.my/tabs/dashboard"
-    WebDriverWait(browser, 15).until(EC.element_to_be_clickable((By.CLASS_NAME, attendance_element)))
-    get_attendance_button = browser.find_element_by_class_name(attendance_element)
+
+    WebDriverWait(browser, 15).until(
+        EC.element_to_be_clickable((By.CLASS_NAME, attendance_element)))
+    get_attendance_button = browser.find_element_by_class_name(
+        attendance_element)
     get_attendance_button.click()
 
 link_3 = "https://apspace.apu.edu.my/attendix/update"
@@ -161,7 +170,6 @@ WebDriverWait(browser, 15).until(EC.url_to_be(link_3))
 get_input = browser.find_elements_by_tag_name("input")
 
 
-pyautogui.alert('Auto attendance program started', "Program started")
 while True:
     time.sleep(INTERVAL_TIME)
     try:
@@ -172,6 +180,7 @@ while True:
     if not img:
         logging.debug("There is no screenshot!")
         continue
+
     results = decode(img)
     if len(results) < 1:
         logging.debug("QR Code not found!")
@@ -181,25 +190,24 @@ while True:
     code_list = list(code)
     logging.info("QR code found!")
 
-
     for i in range(3):
         get_input[i + 1].send_keys(code_list[i])
     try:
-        WebDriverWait(browser, 15).until(EC.presence_of_element_located((By.TAG_NAME, "ion-alert")))
+        WebDriverWait(browser, 15).until(
+            EC.presence_of_element_located((By.TAG_NAME, "ion-alert")))
 
         alertTitle = browser.find_element_by_class_name("alert-title")
         if alertTitle.get_attribute("innerHTML") == "Success!":
-            pyautogui.alert('Class attendance has been signed successfully', "Success!")
-            logging.info("Class attendance signed at: " + datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
-            break #Stops the attendance scanning
+            logging.info("Class attendance signed at: " +
+                         datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+            break  # Stops the attendance scanning
+
         if alertTitle.get_attribute("innerHTML") == "Alert!":
-            alertMsg = browser.find_element_by_class_name("alert-message").get_attribute("innerHTML")
+            alertMsg = browser.find_element_by_class_name(
+                "alert-message").get_attribute("innerHTML")
             logging.info("Error signing attendance: " + alertMsg)
-            click_button = browser.find_element_by_class_name("alert-button").click()
+            click_button = browser.find_element_by_class_name(
+                "alert-button").click()
 
     except Exception as e:
         logging.info(f"Error encountered during code input: {e}")
-
-
-
-
