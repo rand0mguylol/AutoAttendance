@@ -7,8 +7,12 @@
      "pass": "Tp123456@1111"
    }
    ```
-2. install all necessary programs `pip install -r requirements.txt`
-3. run the program: `py main.py`
+2. Install all necessary dependencies via `pip install -r requirements.txt`
+3. Run the program: `py main.py`
+4. Install the drivers that you need:
+  - chrome: https://chromedriver.chromium.org/downloads
+  - edge: https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
+  - firefox: https://github.com/mozilla/geckodriver/releases
 
 ## Changing web browser
 
